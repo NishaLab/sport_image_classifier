@@ -8,84 +8,81 @@ import h5py
 import glob
 
 
-# path to output
+# Đường đẫn đến ouput các global feature data
 output_path = "output/"
 
-# path to training data
+# Đường dẫn thư mục train
 train_path = "select_data_set/"
 
-# get the training labels
+# Lấy các nhãn của tập dữ liệu train
 train_labels = os.listdir(train_path)
 train_labels.sort()
 
-# fixed-sizes for image
-fixed_size = tuple((250, 250))
+# khai báo size ảnh chung
+fixed_size = tuple((500, 500))
 
-# bins for histogram
+# bins trong histogram
 bins = 8
 
-# empty lists to hold feature vectors and labels
+# Tạo mảng rỗng để chứa nhãn và feature
 global_features = []
 labels = []
 
-# feature-descriptor-1: Hu Moments
+# Tách Feature đầu tiên: Hu Moments
 def fd_hu_moments(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     feature = cv2.HuMoments(cv2.moments(image)).flatten()
     return feature
 
-# feature-descriptor-2: Haralick Texture
+# Tách features thứ 2: Haralick Texture
 def fd_haralick(image):
-    # convert the image to grayscale
+    # Chuyển ảnh về kênh màu xám
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # compute the haralick texture feature vector
+    # Tính toán vector features haralick
     haralick = mahotas.features.haralick(gray).mean(axis=0)
     # return the result
     return haralick
 
-# feature-descriptor-3: Color Histogram
+# Tách feature: Color Histogram
 def fd_histogram(image, mask=None):
-    # convert the image to HSV color-space
+    # Chuyển ảnh về hệ màu HSV
     image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    # compute the color histogram
+    # Tính toán histogram
     hist  = cv2.calcHist([image], [0, 1, 2], None, [bins, bins, bins], [0, 256, 0, 256, 0, 256])
-    # normalize the histogram
+    # Chuẩn hoá histogram
     cv2.normalize(hist, hist)
-    # return the histogram
     return hist.flatten()
 
-# read image form each folder
 
-# loop over the training data sub-folders
+# Đọc ảnh trong các folder huấn luyện
 for training_name in train_labels:
-    # join the training data path and each species training folder
+    # tạo path tới folder hiện tại
     dir = os.path.join(train_path, training_name)
 
-    # get the current training label
+    # lấy nhãn cho folder
     current_label = training_name
-    # loop over the images in each sub-folder
-    for file in glob.glob(dir + "\\*.jpg"):
-        # get the image file name
+    # lặp các ảnh trong folder
+    for file in glob.glob(dir + "\\*.jpg"): # lấy path tới ảnh cụ thể
         print(file)
-        # read the image and resize it oto a fixed-size
+        # Đọc ảnh và resize về đúng kích cỡ
         try:
             image = cv2.imread(file)
             image = cv2.resize(image, fixed_size)
         except Exception as e:
             print(str(e))
         ####################################
-        # Global Feature extraction
+        # Tách feature
         ####################################
         fv_hu_moments = fd_hu_moments(image)
         fv_haralick   = fd_haralick(image)
         fv_histogram  = fd_histogram(image)
 
         ###################################
-        # Concatenate global features
+        # Nối các vector features
         ###################################
         global_feature = np.hstack([fv_histogram, fv_hu_moments, fv_haralick])
 
-        # update the list of labels and feature vectors
+        # Cập nhật mảng nhãn và global features
         labels.append(current_label)
         global_features.append(global_feature)
 
@@ -94,21 +91,21 @@ for training_name in train_labels:
 print("[STATUS] completed Global Feature Extraction...")
 
 
-# get the overall feature vector size
+# In ra kích thước của vector features
 print ("[STATUS] feature vector size {}".format(np.array(global_features).shape))
 
 # get the overall training label size
 print ("[STATUS] training Labels {}".format(np.array(labels).shape))
 
-# encode the target labels
+# Mã hoá các nhãn về các giá trị số unique
 le = LabelEncoder()
 target = le.fit_transform(labels)
 
-# normalize the feature vector in the range (0-1)
+# Chuẩn hoá feature vector trong khoảng giá trị từ (0-1)
 scaler = MinMaxScaler(feature_range=(0, 1))
 rescaled_features = scaler.fit_transform(global_features)
 
-# save the feature vector using HDF5
+# Lưu feature vector dưới dạng HDF5
 h5f_data = h5py.File(output_path + 'data.h5', 'w')
 h5f_data.create_dataset('dataset_1', data=np.array(rescaled_features))
 

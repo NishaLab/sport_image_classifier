@@ -12,30 +12,27 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from sklearn.metrics import classification_report
 
-# path to output
-# path to output
+# Đường đẫn đến ouput các global feature data
 output_path = "output/"
 
-# path to training data
+# Đường dẫn thư mục train
 train_path = "select_data_set/"
 
-# get the training labels
+# Lấy các nhãn của tập dữ liệu train
 train_labels = os.listdir(train_path)
-
-# sort the training labels
 train_labels.sort()
 
-# fixed-sizes for image
-fixed_size = tuple((250, 250))
+# khai báo size ảnh chung
+fixed_size = tuple((500, 500))
 
-# no.of.trees for Random Forests
+# Số lượng cây quyết định trong Random Forest
 num_trees = 300
 
-# bins for histogram
+# bins trong histogram
 bins = 8
 
 
-# import the feature vector and trained labels
+# import các feature vector và nhãn
 h5f_data = h5py.File(output_path+'data.h5', 'r')
 h5f_label = h5py.File(output_path+'labels.h5', 'r')
 
@@ -49,63 +46,54 @@ h5f_data.close()
 h5f_label.close()
 
 
-# feature-descriptor-1: Hu Moments
+# Tách Feature đầu tiên: Hu Moments
 def fd_hu_moments(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     feature = cv2.HuMoments(cv2.moments(image)).flatten()
     return feature
 
-# feature-descriptor-2: Haralick Texture
 
-
+# Tách features thứ 2: Haralick Texture
 def fd_haralick(image):
-    # convert the image to grayscale
+    # Chuyển ảnh về kênh màu xám
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # compute the haralick texture feature vector
+    # Tính toán vector features haralick
     haralick = mahotas.features.haralick(gray).mean(axis=0)
     # return the result
     return haralick
 
-# feature-descriptor-3: Color Histogram
-
-
+# Tách feature: Color Histogram
 def fd_histogram(image, mask=None):
-    # convert the image to HSV color-space
+    # Chuyển ảnh về hệ màu HSV
     image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-    # compute the color histogram
-    hist = cv2.calcHist([image], [0, 1, 2], None, [
-                        bins, bins, bins], [0, 256, 0, 256, 0, 256])
-    # normalize the histogram
+    # Tính toán histogram
+    hist  = cv2.calcHist([image], [0, 1, 2], None, [bins, bins, bins], [0, 256, 0, 256, 0, 256])
+    # Chuẩn hoá histogram
     cv2.normalize(hist, hist)
-    # return the histogram
     return hist.flatten()
 
 
-# # create the model - Random Forests
+# # tạo model Random Forests
 clf = RandomForestClassifier(n_estimators=num_trees, criterion="gini", max_depth=None,
  min_samples_split=2, min_samples_leaf=1)
 clf.fit(global_features, global_labels)
 
-# path to test data
+# đường dẫn thư mục test
 test_path = "test_set"
-# get the training labels
+# lấy các nhãn của bộ dữ liệu test
 test_labels = os.listdir(test_path)
-
-# sort the training labels
 test_labels.sort()
 print(test_labels)
-# loop through the test images
 test_features = []
 test_results = []
 for testing_name in test_labels:
-    # join the training data path and each species training folder
+    # Tạo đường dẫn tới thư mục đang xét
     dir = os.path.join(test_path, testing_name)
 
-    # get the current training label
+    # lấy nhãn của thư mục hiện tại
     current_label = testing_name
-    # loop over the images in each sub-folder
+    # Lặp qua tất cả cá file trong thư mục hienẹ tại
     for file in glob.glob(dir + "\\*.jpg"):
-        # get the image file name
         print(file)
         try:
             image = cv2.imread(file)
@@ -128,13 +116,13 @@ for testing_name in test_labels:
         # plt.show()
 
 
-# predict label of test image
-le = LabelEncoder()
-print(test_results)
-y_result = le.fit_transform(test_results)
-print(y_result)
+# Dự đoán nhãn của các ảnh huấn luyện
 y_pred = clf.predict(test_features)
 print(y_pred)
+le = LabelEncoder()
+y_result = le.fit_transform(test_results)
+print(y_result)
+
 
 # print(classification_report(y_result, y_pred, labels=np.unique(y_pred)))
 # for testing_name in test_labels:
