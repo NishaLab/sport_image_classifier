@@ -18,9 +18,6 @@ train_path = "select_data_set/"
 train_labels = os.listdir(train_path)
 train_labels.sort()
 
-# num of images per class
-images_per_class = 400
-
 # fixed-sizes for image
 fixed_size = tuple((250, 250))
 
