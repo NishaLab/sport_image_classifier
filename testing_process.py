@@ -131,9 +131,8 @@ y_result = le.fit_transform(test_results)
 print(y_result)
 y_pred = clf.predict(test_features)
 print(y_pred)
-warnings.filterwarnings('ignore')
 
-print(classification_report(y_result, y_pred))
+print(classification_report(y_result, y_pred, labels=np.unique(y_pred)))
 # for testing_name in test_labels:
 #     # join the training data path and each species training folder
 #     dir = os.path.join(test_path, testing_name)
