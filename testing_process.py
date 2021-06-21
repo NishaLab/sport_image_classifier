@@ -117,14 +117,14 @@ for testing_name in test_labels:
 
 
 # Dự đoán nhãn của các ảnh huấn luyện
-y_pred = clf.predict(test_features)
-print(y_pred)
 le = LabelEncoder()
 y_result = le.fit_transform(test_results)
+print("Label:")
 print(y_result)
+y_pred = clf.predict(test_features)
+print("Predicted label:")
+print(y_pred)
 
-
-# print(classification_report(y_result, y_pred, labels=np.unique(y_pred)))
 # for testing_name in test_labels:
 #     # join the training data path and each species training folder
 #     dir = os.path.join(test_path, testing_name)
@@ -149,3 +149,4 @@ print(y_result)
 #         i+=1
 
 print("Result: ", (y_pred == y_result).tolist().count(True)/len(y_result))
+print(classification_report(y_result, y_pred, labels=np.unique(y_pred)))
