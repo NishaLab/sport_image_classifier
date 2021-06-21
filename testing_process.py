@@ -83,7 +83,8 @@ def fd_histogram(image, mask=None):
 
 
 # # create the model - Random Forests
-clf = RandomForestClassifier(n_estimators=num_trees)
+clf = RandomForestClassifier(n_estimators=num_trees, criterion="gini", max_depth=None,
+ min_samples_split=2, min_samples_leaf=1)
 clf.fit(global_features, global_labels)
 
 # path to test data
