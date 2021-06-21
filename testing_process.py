@@ -44,7 +44,6 @@ global_labels_string = h5f_label['dataset_1']
 
 global_features = np.array(global_features_string)
 global_labels = np.array(global_labels_string)
-print(global_features, global_labels)
 
 h5f_data.close()
 h5f_label.close()
@@ -122,16 +121,22 @@ for testing_name in test_labels:
         test_results.append(current_label)
         global_feature = np.hstack([fv_histogram, fv_hu_moments, fv_haralick])
         test_features.append(global_feature)
+        # prediction = clf.predict(global_feature.reshape(1,-1))[0]
+        # cv2.putText(image, test_labels[prediction], (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,255), 3)
+
+        # plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
+        # plt.show()
 
 
 # predict label of test image
 le = LabelEncoder()
+print(test_results)
 y_result = le.fit_transform(test_results)
 print(y_result)
 y_pred = clf.predict(test_features)
 print(y_pred)
 
-print(classification_report(y_result, y_pred, labels=np.unique(y_pred)))
+# print(classification_report(y_result, y_pred, labels=np.unique(y_pred)))
 # for testing_name in test_labels:
 #     # join the training data path and each species training folder
 #     dir = os.path.join(test_path, testing_name)
