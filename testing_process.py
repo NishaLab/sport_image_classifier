@@ -34,8 +34,6 @@ num_trees = 300
 # bins for histogram
 bins = 8
 
-# num of images per class
-images_per_class = 10
 
 # import the feature vector and trained labels
 h5f_data = h5py.File(output_path+'data.h5', 'r')
