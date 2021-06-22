@@ -48,7 +48,7 @@ def fd_histogram(image, mask=None):
     # Chuyển ảnh về hệ màu HSV
     image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     # Tính toán histogram
-    hist  = cv2.calcHist([image], [0, 1, 2], None, [bins, bins, bins], [0, 256, 0, 256, 0, 256])
+    hist  = cv2.calcHist([image], [0, 1, 2], None, [bins, bins, bins], [0, 181, 0, 256, 0, 256])
     # Chuẩn hoá histogram
     cv2.normalize(hist, hist)
     return hist.flatten()

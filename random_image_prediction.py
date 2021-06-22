@@ -58,7 +58,7 @@ def fd_haralick(image):
 def fd_histogram(image, mask=None):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
     hist = cv2.calcHist([image], [0, 1, 2], None, [
-                        bins, bins, bins], [0, 256, 0, 256, 0, 256])
+                        bins, bins, bins], [0, 181, 0, 256, 0, 256])
     cv2.normalize(hist, hist)
     return hist.flatten()
 clf = RandomForestClassifier(n_estimators=num_trees)
@@ -77,7 +77,8 @@ fv_haralick   = fd_haralick(image)
 fv_histogram  = fd_histogram(image)
 
 global_feature = np.hstack([fv_histogram, fv_haralick, fv_hu_moments])
-print(global_feature)
+h5f_data = h5py.File(output_path + 'random.h5', 'w')
+h5f_data.create_dataset('dataset_1', data=np.array(global_features))
 prediction = clf.predict(global_feature.reshape(1,-1))[0]
 cv2.putText(image, train_labels[prediction], (20,30), cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0,255,255), 3)
 plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
