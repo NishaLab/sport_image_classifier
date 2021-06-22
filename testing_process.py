@@ -125,27 +125,4 @@ y_pred = clf.predict(test_features)
 print("Predicted label:")
 print(y_pred)
 
-# for testing_name in test_labels:
-#     # join the training data path and each species training folder
-#     dir = os.path.join(test_path, testing_name)
-
-#     # get the current training label
-#     # loop over the images in each sub-folder
-#     for file in glob.glob(dir + "\\*.jpg"):
-#         # get the image file name
-#         print(file)
-#         try:
-#             image = cv2.imread(file)
-#             image = cv2.resize(image, fixed_size)
-#         except Exception as e:
-#             print(str(e))
-
-#         cv2.putText(image, train_labels[y_pred[i]], (50, 50),cv2.FONT_HERSHEY_SIMPLEX, 1.0, (0, 0, 255), 2,cv2.LINE_AA)
-
-#         # display the output image
-#         plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-#         plt.show()
-
-#         i+=1
-
 print("Result: ", (y_pred == y_result).tolist().count(True)/len(y_result))
