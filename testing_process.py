@@ -149,4 +149,3 @@ print(y_pred)
 #         i+=1
 
 print("Result: ", (y_pred == y_result).tolist().count(True)/len(y_result))
-# print(classification_report(y_result, y_pred, labels=np.unique(y_pred)))
