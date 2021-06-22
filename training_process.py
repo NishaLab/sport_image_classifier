@@ -101,13 +101,10 @@ print ("[STATUS] training Labels {}".format(np.array(labels).shape))
 le = LabelEncoder()
 target = le.fit_transform(labels)
 
-# Chuẩn hoá feature vector trong khoảng giá trị từ (0-1)
-scaler = MinMaxScaler(feature_range=(0, 1))
-rescaled_features = scaler.fit_transform(global_features)
 
 # Lưu feature vector dưới dạng HDF5
 h5f_data = h5py.File(output_path + 'data.h5', 'w')
-h5f_data.create_dataset('dataset_1', data=np.array(rescaled_features))
+h5f_data.create_dataset('dataset_1', data=np.array(global_features))
 
 h5f_label = h5py.File(output_path+'labels.h5', 'w')
 h5f_label.create_dataset('dataset_1', data=np.array(target))
